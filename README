@@ -1,0 +1,39 @@
+uri
+===
+
+uri is a javascript library for parsing location object into rfc3986
+compliant structure(scheme, authority, host, port, path, query and
+fragment instead of protocol, host, hostname, port, pathname,
+search and hash).
+
+Using
+=====
+
+To get parsed uri of a current page do:
+
+  var curi = new uri();
+  
+Now we can use the next variables: curi.scheme, curi.authority,
+curi.host, curi.port, curi.path, curi.query, curi.fragment.
+
+curi.query is an object, that contains uri query parameter values as
+decoded strings.
+E.g. for a page uri: 
+
+  "https://site.domain:80/cgi-bin/main.cgi?msg=test&val=1#here"
+
+curi parameters are:
+  curi.scheme    - https
+  curi.authority - site.domain:80
+  curi.host      - site.domain
+  curi.port      - 80
+  curi.path      - /cgi-bin/main.cgi
+  curi.query.msg - test
+  curi.query.val - 1
+  curi.fragment  - here
+
+The next functions available:
+  curi.go         - go to new uri(uri constracted from object variables)
+  curi.trunc      - clear query part and fragment part
+  curi.query_fill - fill query part from the first argument(treated as
+                    an object)
