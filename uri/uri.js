@@ -97,9 +97,6 @@ function uri_compose(obj)
 		str += "//";
 		if (obj._.authority.userinfo != null)
 			str += _uri_val(obj._.authority.userinfo, "e") + "@";
-		console.log(obj._.authority.host);
-		console.log(_uri_val(obj._.authority.host));
-		console.log("Я");
 		if (obj._.authority.host != null)
 			if (obj._.authority.host.match(/:/))
 				str += "[" + _uri_val(obj._.authority.host, "le") + "]";
