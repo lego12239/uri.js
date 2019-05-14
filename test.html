@@ -1,0 +1,1062 @@
+<html>
+<head>
+  <title>uri test</title>
+  <meta charset="utf-8"/>
+  <script type="text/javascript" src="uri.solid.js">
+  </script>
+  <script type="text/javascript">
+    var span_ok, span_fail, res_cntr_el;
+    var tests_ok = 0;
+    var tests = [
+    	{title: "Parsing: scheme, authority, path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: scheme, authority, path, query, fragment(with #)",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, authority, path, query, empty fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: ""}})},
+    	{title: "Parsing: scheme, authority, path, query",
+    	 fun: uri_parse.bind(this, 
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d"}})},
+    	{title: "Parsing: scheme, authority, path, query(with ?), fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b?&c=?d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: scheme, authority, path, query(with ?), fragment(with #)",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, authority, path, query(with ?), empty fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b?&c=?d#"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: ""}})},
+    	{title: "Parsing: scheme, authority, path, query(with ?)",
+    	 fun: uri_parse.bind(this, 
+    	   "unknown://www.domain.ru/path/to/page?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: scheme, authority, path, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: scheme, authority, path",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru/path/to/page"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page"}})},
+    	{title: "Parsing: scheme, authority, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, authority, query",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: scheme, authority, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, authority",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"}}})},
+    	{title: "Parsing: scheme, path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:/path/to/page?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, path, query",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:/path/to/page?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: scheme, path, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:/path/to/page#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, path",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:/path/to/page"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page"}})},
+    	{title: "Parsing: scheme, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme, query",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: scheme, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: scheme",
+    	 fun: uri_parse.bind(this,
+    	   "unknown:"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    scheme: "unknown"}})},
+      	{title: "Parsing: authority, path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority, path, query",
+    	 fun: uri_parse.bind(this, 
+    	   "//www.domain.ru/path/to/page?a=b&c=d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d"}})},
+     	{title: "Parsing: authority, path, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru/path/to/page#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority, path",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru/path/to/page"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page"}})},
+    	{title: "Parsing: authority, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: authority, query",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: authority, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: authority",
+    	 fun: uri_parse.bind(this,
+    	   "//www.domain.ru"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    authority: {
+	    	    	host: "www.domain.ru"}}})},
+    	{title: "Parsing: path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "/path/to/page?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: path, query",
+    	 fun: uri_parse.bind(this,
+    	   "/path/to/page?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    path: "/path/to/page",
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: path, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "/path/to/page#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    path: "/path/to/page",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: path",
+    	 fun: uri_parse.bind(this,
+    	   "/path/to/page"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	    path: "/path/to/page"}})},
+    	{title: "Parsing: query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "?a=b?&c=?d#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	 	query: "a=b?&c=?d",
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: query",
+    	 fun: uri_parse.bind(this,
+    	   "?a=b?&c=?d"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	 	query: "a=b?&c=?d"}})},
+    	{title: "Parsing: fragment",
+    	 fun: uri_parse.bind(this,
+    	   "#frag#MenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	_: {
+	    	 	fragment: "frag#MenT"}})},
+    	{title: "Parsing: spaces ",
+    	 fun: uri_parse.bind(this, " 	"),
+    	 check_fun: check_parse.bind(this, null)},
+    	{title: "Parsing: empty ",
+    	 fun: uri_parse.bind(this, ""),
+    	 check_fun: check_parse.bind(this, null)},
+    	{title: "Parsing: null",
+    	 fun: uri_parse.bind(this, null),
+    	 check_fun: check_parse.bind(this, null)},
+    	{title: "Parsing: authority: userinfo, host, port",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://use:r@www.domain.ru:8888/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "use:r",
+	    	    	host: "www.domain.ru",
+	    	    	port: 8888},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: userinfo, host, empty port",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://use:r@www.domain.ru:/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "use:r",
+	    	    	host: "www.domain.ru",
+	    	    	port: ""},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: userinfo, host",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://use:r@www.domain.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "use:r",
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: userinfo empty, host",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://@www.domain.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "",
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: userinfo empty, host, port",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://@www.domain.ru:8888/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "",
+	    	    	host: "www.domain.ru",
+	    	    	port: 8888},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: host, port",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru:8888/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru",
+	    	    	port: 8888},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: host, empty port",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.domain.ru:/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru",
+	    	    	port: ""},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: ipv6 addr as a host",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://[fe80::7657:bd53:daac:e55b]/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "fe80::7657:bd53:daac:e55b"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: authority: ipv6 addr as a host, port",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://[fe80::7657:bd53:daac:e55b]:8888/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "fe80::7657:bd53:daac:e55b",
+	    	    	port: 8888},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: lowercasing of scheme",
+    	 fun: uri_parse.bind(this,
+    	   "unKnoWn://www.domain.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: lowercasing of host",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://wwW.DoMAin.RU/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: pct-encoded in userinfo",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://use%3Ar@www.domain.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "use:r",
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: pct-encoded in host",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.d%6f%6Da%69n.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Parsing: pct-encoded in host & lowercasing",
+    	 fun: uri_parse.bind(this,
+    	   "unknown://www.d%4f%6Da%69n.ru/path/to/page?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "Composing: scheme, authority, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: scheme, authority, path, query, empty fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: ""}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#")},
+    	{title: "Composing: scheme, authority, path, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d")},
+    	{title: "Composing: scheme, authority, path, empty query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?#fragMenT")},
+    	{title: "Composing: scheme, authority, path, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page#fragMenT")},
+    	{title: "Composing: scheme, authority, path, empty query, empty fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "",
+	    	 	fragment: ""}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?#")},
+    	{title: "Composing: scheme, authority, path",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page")},
+    	{title: "Composing: scheme, authority, empty path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru?a=b&c=d#fragMenT")},
+    	{title: "Composing: scheme, authority, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru?a=b&c=d#fragMenT")},
+    	{title: "Composing: scheme, authority, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru?a=b&c=d")},
+    	{title: "Composing: scheme, authority, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru#fragMenT")},
+    	{title: "Composing: scheme, authority",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru")},
+    	{title: "Composing: scheme, empty authority, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:///path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: scheme, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: scheme, path, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:/path/to/page?a=b&c=d")},
+    	{title: "Composing: scheme, path, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: "fragMent"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:/path/to/page#fragMent")},
+    	{title: "Composing: scheme, path",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:/path/to/page")},
+    	{title: "Composing: scheme, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:?a=b&c=d#fragMenT")},
+    	{title: "Composing: scheme, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:?a=b&c=d")},
+    	{title: "Composing: scheme, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: "fragMent"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:#fragMent")},
+    	{title: "Composing: scheme",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown:")},
+    	{title: "Composing: empty scheme, authority, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "://www.domain.ru/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: authority, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: authority, path, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru/path/to/page?a=b&c=d")},
+    	{title: "Composing: authority, path, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru/path/to/page#fragMenT")},
+    	{title: "Composing: authority, path",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru/path/to/page")},
+    	{title: "Composing: authority, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru?a=b&c=d#fragMenT")},
+    	{title: "Composing: authority, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru?a=b&c=d")},
+    	{title: "Composing: authority, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru#fragMenT")},
+    	{title: "Composing: authority",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "//www.domain.ru")},
+    	{title: "Composing: path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: path, query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "/path/to/page?a=b&c=d")},
+    	{title: "Composing: path, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: "fragMent"}}),
+	     check_fun: check_compose.bind(this,
+    	   "/path/to/page#fragMent")},
+    	{title: "Composing: path",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: "/path/to/page",
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "/path/to/page")},
+    	{title: "Composing: query, fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "?a=b&c=d#fragMenT")},
+    	{title: "Composing: query",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: null,
+	    	 	query: "a=b&c=d",
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   "?a=b&c=d")},
+    	{title: "Composing: fragment",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: "fragMent"}}),
+	     check_fun: check_compose.bind(this,
+    	   "#fragMent")},
+    	{title: "Composing: empty scheme",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "",
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this,
+    	   ":")},
+    	{title: "Composing: null scheme",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: null,
+	    	    path: null,
+	    	 	query: null,
+	    	 	fragment: null}}),
+	     check_fun: check_compose.bind(this, "")},
+    	{title: "Composing: null scheme",
+    	 fun: uri_compose.bind(this, null),
+	     check_fun: check_compose.bind(this, null)},
+    	{title: "Composing: lowercasing of scheme",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unkNown",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: lowercasing of host",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.dOMaiN.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://www.domain.ru/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: pct-encoded in userinfo",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	userinfo: "use@",
+	    	    	host: "www.domain.ru"},
+	    	    path: "/path/to/page",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}}),
+	     check_fun: check_compose.bind(this,
+    	   "unknown://use%40@www.domain.ru/path/to/page?a=b&c=d#fragMenT")},
+    	{title: "Composing: pct-encoded in host",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.doma/in.ru"},
+	    	    path: "/path/to/page"}}),
+	     check_fun: check_compose_lower.bind(this,
+    	   "unknown://www.doma%2fin.ru/path/to/page")},
+    	{title: "Composing: pct-encoded in host & lowercasing",
+    	 fun: uri_compose.bind(this, {
+    		_: {
+	    	    scheme: "unknown",
+	    	    authority: {
+	    	    	host: "www.doMAinЯ.Ru"},
+	    	    path: "/path/to/page"}}),
+	     check_fun: check_compose_lower.bind(this,
+    	   "unknown://www.domain%d1%8f.ru/path/to/page")}];
+
+    function report_ok(test)
+    {
+        var el, span;
+
+
+        el = document.createElement("div");
+        span = document.createElement("span");
+        span.innerHTML = "test '" + test.idx + "' (" + test.title + "): ";
+        el.appendChild(span);
+        el.appendChild(span_ok.cloneNode(true));
+        res_cntr_el.appendChild(el);
+        
+        tests_ok++;
+        
+        return 1;
+    }
+
+    function report_fail(test)
+    {
+        var el, span;
+
+
+        el = document.createElement("div");
+        span = document.createElement("span");
+        span.innerHTML = "test '" + test.idx + "' (" + test.title + "): ";
+        el.appendChild(span);
+        el.appendChild(span_fail.cloneNode(true));
+        res_cntr_el.appendChild(el);
+        
+        return 0;
+    }
+    
+    function check_parse(must, _uri) {
+    	if ((must == null) && (must == _uri))
+    		return 1;
+    	if (!_check_parse(must, _uri))
+    		return 0;
+    	return _check_parse(_uri, must);
+    }
+	function _check_parse(must, got)
+	{
+		var p;
+	
+		for(p in must)
+			if (Object.prototype.toString.call(must[p]) == "[object Object]") {
+				if (!_check_parse(got[p], must[p]))
+					return 0;
+			} else if (got[p] != must[p]) 
+				return 0;
+		return 1;
+	}
+    function check_compose(must, _uri) {
+    	if (must == _uri)
+    		return 1;
+    	return 0;
+    }
+    function check_compose_lower(must, _uri) {
+    	if (must == _uri.toLowerCase())
+    		return 1;
+    	return 0;
+    }
+	
+    function do_tests()
+    {
+		var i;
+		var res;
+
+
+		span_ok = document.getElementById("results_ok");
+		span_fail = document.getElementById("results_fail");
+		res_cntr_el = document.getElementById("results");
+
+        // set counter initial value
+        document.getElementById("counter").innerHTML = "0/" + tests.length;
+
+        for(i = 0; i < tests.length; i++) {
+        	tests[i].idx = i;
+            try {
+            	res = tests[i].fun();
+            } catch (ex) {
+            	console.log(ex);
+                report_fail(tests[i]);
+                continue;
+            }
+            console.log("test" + i + ": " + JSON.stringify(tests[i]));
+            console.log("test" + i + " res: " + JSON.stringify(res));
+
+            if (tests[i].check_fun(res))
+            	report_ok(tests[i]);
+            else
+            	report_fail(tests[i]);
+            	
+            // set counter
+            document.getElementById("counter").innerHTML = "all: " + tests.length + " run: " + (i + 1) + " ok: " + tests_ok;
+        }
+	}
+  </script>
+</head>
+<body onload="do_tests()">
+  <div style="margin: 1em">
+    tests: <span id="counter">all: 0</span>
+  </div>
+
+  <div style="display: none">
+    <span id="results_fail" style="color: red; font-weight: bold">fail</span>
+    <span id="results_ok" style="color: green; font-weight: bold">ok</span>
+  </div>
+  
+  <div id="results">
+  </div>
+</body>
+</html>
