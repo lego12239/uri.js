@@ -946,7 +946,429 @@
 	    	    	host: "www.doMAinЯ.Ru"},
 	    	    path: "/path/to/page"}}),
 	     check_fun: check_compose_lower.bind(this,
-    	   "unknown://www.domain%d1%8f.ru/path/to/page")}];
+    	   "unknown://www.domain%d1%8f.ru/path/to/page")},
+    	{title: "http parsing: scheme, authority, path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "http://www.domain.ru/Path/to/pAge?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMenT",
+    		_: {
+	    	    scheme: "http",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Path/to/pAge",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "http parsing: scheme, authority, pct-encoded path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "http://www.domain.ru/Pat%68/t%4f/pAge?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/tO/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMenT",
+    		_: {
+	    	    scheme: "http",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Pat%68/t%4f/pAge",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "http parsing: scheme, authority, path, pct-encoded query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "http://www.domain.ru/Path/tO/pAge?a=%3db%26&%63=%26d%23#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/tO/pAge",
+	    	query: {
+	    		a: "=b&",
+	    		c: "&d#"},
+	    	fragment: "fragMenT",
+    		_: {
+	    	    scheme: "http",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Path/tO/pAge",
+	    	 	query: "a=%3db%26&%63=%26d%23",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "http parsing: scheme, authority, path, query, pct-encoded fragment",
+    	 fun: uri_parse.bind(this,
+    	   "http://www.domain.ru/Path/tO/pAge?a=b&c=d#frag%4d%4denT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/tO/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMMenT",
+    		_: {
+	    	    scheme: "http",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Path/tO/pAge",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "frag%4d%4denT"}})},
+    	{title: "http composing: scheme, authority, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMenT"}),
+    	 check_fun: check_compose.bind(this,
+    	   "http://www.domain.ru/Path/to/pAge?a=b&c=d#fragMenT")},
+    	{title: "http composing: scheme, authority, pct-encoded path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/t+o/pAge"}),
+    	 check_fun: check_compose_lower.bind(this,
+    	   "http://www.domain.ru/path/t%2bo/page")},
+    	{title: "http composing: scheme, authority, path, pct-encoded query, fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "=b&",
+	    		c: "&d#"}}),
+    	 check_fun: check_compose_lower.bind(this,
+    	   "http://www.domain.ru/path/to/page?a=%3db%26&c=%26d%23")},
+    	{title: "http composing: scheme, authority, path, query, pct-encoded fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "http",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 80},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "frag#MenT"}),
+    	 check_fun: check_compose_lower.bind(this,
+    	   "http://www.domain.ru/path/to/page?a=b&c=d#frag%23ment")},
+    	{title: "https parsing: scheme, authority, path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "https://www.domain.ru/Path/to/pAge?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMenT",
+    		_: {
+	    	    scheme: "https",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Path/to/pAge",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "https parsing: scheme, authority, pct-encoded path, query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "https://www.domain.ru/Pat%68/t%4f/pAge?a=b&c=d#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/tO/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMenT",
+    		_: {
+	    	    scheme: "https",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Pat%68/t%4f/pAge",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "https parsing: scheme, authority, path, pct-encoded query, fragment",
+    	 fun: uri_parse.bind(this,
+    	   "https://www.domain.ru/Path/tO/pAge?a=%3db%26&%63=%26d%23#fragMenT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/tO/pAge",
+	    	query: {
+	    		a: "=b&",
+	    		c: "&d#"},
+	    	fragment: "fragMenT",
+    		_: {
+	    	    scheme: "https",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Path/tO/pAge",
+	    	 	query: "a=%3db%26&%63=%26d%23",
+	    	 	fragment: "fragMenT"}})},
+    	{title: "https parsing: scheme, authority, path, query, pct-encoded fragment",
+    	 fun: uri_parse.bind(this,
+    	   "https://www.domain.ru/Path/tO/pAge?a=b&c=d#frag%4d%4denT"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/tO/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMMenT",
+    		_: {
+	    	    scheme: "https",
+	    	    authority: {
+	    	    	host: "www.domain.ru"},
+	    	    path: "/Path/tO/pAge",
+	    	 	query: "a=b&c=d",
+	    	 	fragment: "frag%4d%4denT"}})},
+    	{title: "https composing: scheme, authority, path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "fragMenT"}),
+    	 check_fun: check_compose.bind(this,
+    	   "https://www.domain.ru/Path/to/pAge?a=b&c=d#fragMenT")},
+    	{title: "https composing: scheme, authority, pct-encoded path, query, fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/t+o/pAge"}),
+    	 check_fun: check_compose_lower.bind(this,
+    	   "https://www.domain.ru/path/t%2bo/page")},
+    	{title: "https composing: scheme, authority, path, pct-encoded query, fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "=b&",
+	    		c: "&d#"}}),
+    	 check_fun: check_compose_lower.bind(this,
+    	   "https://www.domain.ru/path/to/page?a=%3db%26&c=%26d%23")},
+    	{title: "https composing: scheme, authority, path, query, pct-encoded fragment",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "https",
+    	 	authority: {
+    	 		host: "www.domain.ru",
+    	 		port: 443},
+	    	path: "/Path/to/pAge",
+	    	query: {
+	    		a: "b",
+	    		c: "d"},
+	    	fragment: "frag#MenT"}),
+    	 check_fun: check_compose_lower.bind(this,
+    	   "https://www.domain.ru/path/to/page?a=b&c=d#frag%23ment")},
+    	{title: "mailto parsing: empty",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	_: {
+    	 		scheme: "mailto"}})},
+    	{title: "mailto parsing: addr",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru"}})},
+    	{title: "mailto parsing: addr, fields",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru?subject=test&body=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru",
+    	 		query: "subject=test&body=some%20body"}})},
+    	{title: "mailto parsing: addr, fields with scheme field",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		scheme: "qq"},
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru",
+    	 		query: "subject=test&body=some%20body&scheme=qq"}})},
+    	{title: "mailto parsing: addr, fields with scheme and _ field",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&_=ff"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		scheme: "qq",
+    	 		_: "ff"},
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru",
+    	 		query: "subject=test&body=some%20body&scheme=qq&_=ff"}})},
+    	{title: "mailto parsing: addr, fields with scheme and e field",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&e=ff"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		scheme: "qq",
+    	 		e: "ff"},
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru",
+    	 		query: "subject=test&body=some%20body&scheme=qq&e=ff"}})},
+    	{title: "mailto parsing: addr, fields with to",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru?to=another@d.com&subject=test&body=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "another@d.com",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru",
+    	 		query: "to=another@d.com&subject=test&body=some%20body"}})},
+    	{title: "mailto parsing: fields with to",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:?to=another@d.com&subject=test&body=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "another@d.com",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		query: "to=another@d.com&subject=test&body=some%20body"}})},
+    	{title: "mailto parsing: fields with to and uppercase",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:?to=another@d.com&subJect=test&boDy=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "another@d.com",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		query: "to=another@d.com&subJect=test&boDy=some%20body"}})},
+    	{title: "mailto composing: empty",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto"}),
+    	 check_fun: check_compose.bind(this, "mailto:")},
+    	{title: "mailto composing: to",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru"}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru")},
+    	{title: "mailto composing: to and other fields",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body"}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body")},
+    	{title: "mailto composing: to and other fields with scheme field",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		scheme: "qq"}}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq")},
+    	{title: "mailto composing: to and other fields with scheme and _ fields",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		scheme: "qq",
+    	 		_: "ff"}}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&_=ff")},
+    	{title: "mailto composing: to and other fields with scheme and e fields",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		scheme: "qq",
+    	 		e: "ff"}}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&e=ff")},
+    	{title: "mailto composing: to and other fields uppercase",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	tO: "name@domain.ru",
+    	 	subjECt: "test",
+    	 	boDy: "some%20body"}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body")},
+    	{title: "mailto composing: to and other fields with scheme and e fields uppercase",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: "name@domain.ru",
+    	 	subject: "test",
+    	 	body: "some%20body",
+    	 	e: {
+    	 		schEMe: "qq",
+    	 		E: "ff"}}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&e=ff")}];
 
     function report_ok(test)
     {
