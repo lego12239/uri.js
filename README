@@ -1,39 +1,90 @@
 uri
 ===
 
-uri is a javascript library for parsing location object into rfc3986
+uri is a javascript library for parsing URI into rfc3986
 compliant structure(scheme, authority, host, port, path, query and
-fragment instead of protocol, host, hostname, port, pathname,
-search and hash).
+fragment) and vice versa.
+If a scheme is supported by the library(like http, https, mailto),
+then, in addition to rfc3986 comliant structure, we get properties
+specific for a scheme.
 
 Using
 =====
 
+Parsing of uri:
+
+  var uri = uri_parse("https://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
+  
+In uri we get:
+
+  uri.scheme           - https
+  uri.authority.host   - site.domain
+  uri.authority.port   - 443
+  uri.path             - /cgi-bin/main.cgi
+  uri.query.msg        - test
+  uri.query.val        - 1
+  uri.fragment         - here
+  uri._.scheme         - https
+  uri._.authority.host - site.domain
+  uri._.path           - /cgi-bin/main.cgi
+  uri._.query          - msg=test&val=1
+  uri._.fragment       - here
+
+Inside _ property resides an rfc3986 compliant values.
+If we parse not supported scheme, then we get only rfc3986 values:
+
+  var uri = uri_parse("unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
+  
+uri contains:
+
+  uri._.scheme         - unknown
+  uri._.authority.host - site.domain
+  uri._.path           - /cgi-bin/main.cgi
+  uri._.query          - msg=test&val=1
+  uri._.fragment       - here
+
+To compose uri string, we must call uri_compose with uri object:
+
+var uri = uri_compose({
+	_: {
+		scheme: "unknown",
+		authority: {
+			host: "site.domain",
+			path: "/cgi-bin/main.cgi"},
+		query: "msg=test&val=1",
+		fragment: "here"}});
+
+uri contains:
+
+"unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here"
+  
 To get parsed uri of a current page do:
 
-  var curi = new uri();
-  
-Now we can use the next variables: curi.scheme, curi.authority,
-curi.host, curi.port, curi.path, curi.query, curi.fragment.
+  var curi = uri_parse(location.href);
 
-curi.query is an object, that contains uri query parameter values as
-decoded strings.
-E.g. for a page uri: 
+To normalize uri do:
 
-  "https://site.domain:80/cgi-bin/main.cgi?msg=test&val=1#here"
+var uri = uri_compose(uri_parse("https://site.dOmaiN:443/cgi-bin/main.cgi?msg=test&val=1#here"));
 
-curi parameters are:
-  curi.scheme    - https
-  curi.authority - site.domain:80
-  curi.host      - site.domain
-  curi.port      - 80
-  curi.path      - /cgi-bin/main.cgi
-  curi.query.msg - test
-  curi.query.val - 1
-  curi.fragment  - here
+uri contains:
 
-The next functions available:
-  curi.go         - go to new uri(uri constracted from object variables)
-  curi.trunc      - clear query part and fragment part
-  curi.query_fill - fill query part from the first argument(treated as
-                    an object)
+"https://site.domain/cgi-bin/main.cgi?msg=test&val=1#here"
+
+For example, for mailto scheme:
+
+var uri = uri_parse("mailto:name@domain.ru?subject=test&scheme=wtf&e=wtf2");
+
+uri contains:
+
+  uri.scheme   - "mailto"
+  uri.to       - "name@domain.ru"
+  uri.subject  - "test"
+  uri.e.scheme - "wtf"
+  uri.e.e      - "wtf2"
+  uri._.scheme - "mailto"
+  uri._.path   - "name@domain.ru"
+  uri._.query  - "subject=test&scheme=wtf&e=wtf2"
+
+To see what schemes are supported, view uri_schemes object in a
+browser console.
+
