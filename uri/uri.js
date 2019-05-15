@@ -1,4 +1,4 @@
-/* uri | uri 0.9.0 | License - GNU LGPL 3 */
+/* uri | uri 0.10.0 | License - GNU LGPL 3 */
 /*
   This library is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
