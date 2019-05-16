@@ -1,9 +1,4 @@
-1. make this.authority, this.host and this.port with setters.
-   if this.authority is set, then this.host and this.port must be set
-   automatically and vice-versa.
-2. add a possiblity to parse an any uri specified as string(parse function).
-3. fix rfc3986 compliance: add userinfo parsing.
-4. add variable this.uri(with setter&getter) - to get&set full uri.
-   May be we can use it instead of parse function(2 TODO task) to parse
-   uri with help of this.uri setter.
 5. add example?
+7. Use _uri_parse_get_val() for all vars in uri_parse()?
+11. Add ftp, tel, ldap uri
+12. Add check that port is number. Add test for this
