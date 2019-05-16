@@ -1,4 +1,4 @@
-SRC ?= uri/uri.js uri/http.js uri/mailto.js
+SRC ?= uri/uri.js uri/http.js uri/mailto.js uri/mailto_a.js
 
 solid: uri.solid.js
 
