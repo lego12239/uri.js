@@ -2,10 +2,17 @@
 <head>
   <title>uri test</title>
   <meta charset="utf-8"/>
-  <script type="text/javascript" src="uri.solid.js">
+  <script type="text/javascript" src="uri/uri.js">
+  </script>
+  <script type="text/javascript" src="uri/http.js">
+  </script>
+  <script type="text/javascript" src="uri/mailto.js">
   </script>
   <script type="text/javascript">
     var span_ok, span_fail, res_cntr_el;
+    var scnt = 0;
+    var tests_total = 0;
+    var tests_run = 0;
     var tests_ok = 0;
     var tests = [
     	{title: "Parsing: scheme, authority, path, query, fragment",
@@ -1368,7 +1375,85 @@
     	 	e: {
     	 		schEMe: "qq",
     	 		E: "ff"}}),
-    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&e=ff")}];
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru?subject=test&body=some%20body&scheme=qq&e=ff")},
+    	{load: ["uri/mailto_a.js"]},
+    	{title: "[mailto_a] mailto parsing: empty",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	_: {
+    	 		scheme: "mailto"}})},
+    	{title: "[mailto_a] mailto parsing: addr",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru"],
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru"}})},
+    	{title: "[mailto_a] mailto parsing: addr, pct-encoded fields",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru?subject=test&body=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru"],
+    	 	subject: "test",
+    	 	body: "some body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru",
+    	 		query: "subject=test&body=some%20body"}})},
+    	{title: "[mailto_a] mailto parsing: addr >1, fields",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru,user@site.com?subject=test&body=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru", "user@site.com"],
+    	 	subject: "test",
+    	 	body: "some body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru,user@site.com",
+    	 		query: "subject=test&body=some%20body"}})},
+    	{title: "[mailto_a] mailto parsing: addr >1, fields cc > 1",
+    	 fun: uri_parse.bind(this,
+    	   "mailto:name@domain.ru,user@site.com?cc=m1@some.biz,m2@thing.su&subject=test&body=some%20body"),
+    	 check_fun: check_parse.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru", "user@site.com"],
+    	 	cc: ["m1@some.biz", "m2@thing.su"],
+    	 	subject: "test",
+    	 	body: "some body",
+    	 	_: {
+    	 		scheme: "mailto",
+    	 		path: "name@domain.ru,user@site.com",
+    	 		query: "cc=m1@some.biz,m2@thing.su&subject=test&body=some%20body"}})},
+    	{title: "[mailto_a] mailto composing: empty",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto"}),
+    	 check_fun: check_compose.bind(this, "mailto:")},
+    	{title: "[mailto_a] mailto composing: addr > 1",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru", "user@site.com"]}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru,user@site.com")},
+    	{title: "[mailto_a] mailto composing: addr > 1, pct-encoded fields",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru", "user@site.com"],
+    	 	subject: "test",
+    	 	body: "some body"}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru,user@site.com?subject=test&body=some%20body")},
+    	{title: "[mailto_a] mailto composing: addr > 1, pct-encoded fields, cc > 1",
+    	 fun: uri_compose.bind(this, {
+    	 	scheme: "mailto",
+    	 	to: ["name@domain.ru", "user@site.com"],
+    	 	cc: ["m1@some.biz", "m2@thing.su"],
+    	 	subject: "test",
+    	 	body: "some body"}),
+    	 check_fun: check_compose.bind(this, "mailto:name@domain.ru,user@site.com?cc=m1@some.biz,m2@thing.su&subject=test&body=some%20body")}];
 
     function report_ok(test)
     {
@@ -1411,12 +1496,20 @@
     }
 	function _check_parse(must, got)
 	{
-		var p;
+		var p, i;
 	
 		for(p in must)
 			if (Object.prototype.toString.call(must[p]) == "[object Object]") {
 				if (!_check_parse(got[p], must[p]))
 					return 0;
+			} else if (Array.isArray(must[p])) {
+				if (!Array.isArray(got[p]))
+					return 0;
+				if (got[p].length != must[p].length)
+					return 0;
+				for(i = 0; i < must[p].length; i++)
+					if (got[p][i] != must[p][i])
+						return 0;
 			} else if (got[p] != must[p]) 
 				return 0;
 		return 1;
@@ -1432,7 +1525,7 @@
     	return 0;
     }
 	
-    function do_tests()
+    function do_tests(off)
     {
 		var i;
 		var res;
@@ -1445,7 +1538,11 @@
         // set counter initial value
         document.getElementById("counter").innerHTML = "0/" + tests.length;
 
-        for(i = 0; i < tests.length; i++) {
+        for(i = off == null ? 0 : off; i < tests.length; i++) {
+        	if (tests[i].load != null) {
+        		load_scripts(tests[i].load, i + 1);
+        		return;
+        	}
         	tests[i].idx = i;
             try {
             	res = tests[i].fun();
@@ -1454,6 +1551,7 @@
                 report_fail(tests[i]);
                 continue;
             }
+            tests_run++;
             console.log("test" + i + ": " + JSON.stringify(tests[i]));
             console.log("test" + i + " res: " + JSON.stringify(res));
 
@@ -1463,12 +1561,44 @@
             	report_fail(tests[i]);
             	
             // set counter
-            document.getElementById("counter").innerHTML = "all: " + tests.length + " run: " + (i + 1) + " ok: " + tests_ok;
+            document.getElementById("counter").innerHTML = "all: " + tests_total + " run: " + tests_run + " ok: " + tests_ok;
         }
+        
 	}
+    function load_scripts(scripts, idx)
+    {
+    	var i;
+    	var e;
+        
+        scnt = scripts.length;
+        for(i = 0; i < scripts.length; i++) {
+	    	e = document.createElement("script");
+	    	e.type = "text/javascript";
+	    	e.src = scripts[i];
+	    	e.onload = load_scripts_done.bind(this, idx);
+	    	document.head.appendChild(e);
+	    }
+    }
+    function load_scripts_done(idx)
+    {
+    	scnt--;
+    	if (scnt)
+    		return;
+    	do_tests(idx);
+    }
+    function init()
+    {
+    	var i;
+    	
+    	tests_total = tests.length;
+    	for(i = 0; i < tests.length; i++)
+    		if (tests[i].load != null)
+    			tests_total--;
+    	do_tests();
+    }
   </script>
 </head>
-<body onload="do_tests()">
+<body onload="init()">
   <div style="margin: 1em">
     tests: <span id="counter">all: 0</span>
   </div>
