@@ -11,6 +11,23 @@ specific for a scheme.
 Using
 =====
 
+Insert into html head:
+
+  <script type="text/javascript" src="uri.solid.min.js">
+  </script>
+
+Or:
+
+  <script type="text/javascript" src="uri.solid.js">
+  </script>
+
+Or
+  <script type="text/javascript" src="uri/uri.js">
+  </script>
+  <script type="text/javascript" src="uri/http.js">
+  </script>
+  ...
+
 Parsing of uri:
 
   var uri = uri_parse("https://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
@@ -88,3 +105,8 @@ uri contains:
 To see what schemes are supported, view uri_schemes object in a
 browser console.
 
+Adding new schemes
+==================
+
+See uri/http.js and uri/mailto.js for examples.
+See uri/mailto_a.js for example of scheme support that build on top of other one.
