@@ -12,7 +12,8 @@ function uri_parse_mailto(obj)
 	obj.scheme = obj._.scheme;
 	if (obj._.authority != null)
 		throw("mailto scheme mustn't contains authority");
-	obj.to = obj._.path;
+	if (obj._.path != null)
+		obj.to = obj._.path;
 	if (obj._.query != null) {
 		a = obj._.query.split("&");
 		for(i = 0; i < a.length; i++) {
