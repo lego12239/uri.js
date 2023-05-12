@@ -31,14 +31,16 @@ function uri_parse(str)
 		tmp = _uri_val(m[4]);
 		mauth = tmp.match(/^(([^@]*)@)?(\[(.+)\]|([^:]+))(:([0-9]*))?$/);
 		obj._.authority = {};
-		if (mauth[1] != null)
-			obj._.authority.userinfo = _uri_val(mauth[2], "d");
-		if (mauth[4] != null)
-			obj._.authority.host = _uri_val(mauth[4], "dl");
-		else if (mauth[5] != null)
-			obj._.authority.host = _uri_val(mauth[5], "dl");
-		if (mauth[6] != null)
-			obj._.authority.port = _uri_val(mauth[7]);
+		if (mauth != null) {
+			if (mauth[1] != null)
+				obj._.authority.userinfo = _uri_val(mauth[2], "d");
+			if (mauth[4] != null)
+				obj._.authority.host = _uri_val(mauth[4], "dl");
+			else if (mauth[5] != null)
+				obj._.authority.host = _uri_val(mauth[5], "dl");
+			if (mauth[6] != null)
+				obj._.authority.port = _uri_val(mauth[7]);
+		}
 	}
 	if ((m[5] != null) && (m[5] != ""))
 		obj._.path = _uri_val(m[5]);
