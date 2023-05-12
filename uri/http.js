@@ -58,6 +58,8 @@ function uri_compose_http(obj)
 			    ((obj.authority.port != 443) && (obj._.scheme == "https")))
 				obj._.authority.port = obj.authority.port;
 	}
+	if (obj.path == null)
+		obj.path = "";
 	p = obj.path.split("/");
 	p = p.map(function (x) {return _uri_val(x, "e");});
 	obj._.path = p.join("/");
