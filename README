@@ -1,5 +1,5 @@
-uri
-===
+OVERVIEW
+========
 
 uri is a javascript library for parsing URI into rfc3986
 compliant structure(scheme, authority, host, port, path, query and
@@ -8,10 +8,16 @@ If a scheme is supported by the library(like http, https, mailto),
 then, in addition to rfc3986 comliant structure, we get properties
 specific for a scheme.
 
-Using
-=====
+SYNOPSIS
+========
 
-Insert into html head:
+OBJECT = uri_parse(STRING)
+STRING = uri_compose(OBJECT)
+
+DESCRIPTION
+===========
+
+To load the library, insert into html head:
 
   <script type="text/javascript" src="uri.solid.min.js">
   </script>
@@ -28,39 +34,51 @@ Or
   </script>
   ...
 
-Parsing of uri:
+uri_parse is used to parse a specified uri string into an separate parts.
+This function is returned an object with parsed parts. For example, this line:
 
   var uri = uri_parse("https://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
   
-In uri we get:
+returns into uri var an object with the next properties:
 
-  uri.scheme           - https
-  uri.authority.host   - site.domain
-  uri.authority.port   - 443
-  uri.path             - /cgi-bin/main.cgi
-  uri.query.msg        - test
-  uri.query.val        - 1
-  uri.fragment         - here
-  uri._.scheme         - https
-  uri._.authority.host - site.domain
-  uri._.path           - /cgi-bin/main.cgi
-  uri._.query          - msg=test&val=1
-  uri._.fragment       - here
+  scheme           - "https"
+  authority.host   - "site.domain"
+  authority.port   - 443
+  path             - "/cgi-bin/main.cgi"
+  query.msg        - "test"
+  query.val        - '1"
+  fragment         - "here"
+  _.scheme         - "https"
+  _.authority.host - "site.domain"
+  _.path           - "/cgi-bin/main.cgi"
+  _.query          - "msg=test&val=1"
+  _.fragment       - "here"
 
-Inside _ property resides an rfc3986 compliant values.
-If we parse not supported scheme, then we get only rfc3986 values:
+Inside "_" property resides rfc3986 compliant values.
+If we parse a scheme that isn't supported, then we get only rfc3986 values.
+For example, the next line:
 
   var uri = uri_parse("unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
   
-uri contains:
+Gives us:
 
-  uri._.scheme         - unknown
-  uri._.authority.host - site.domain
-  uri._.path           - /cgi-bin/main.cgi
-  uri._.query          - msg=test&val=1
-  uri._.fragment       - here
+  uri._.scheme         - "unknown"
+  uri._.authority.host - "site.domain"
+  uri._.path           - "/cgi-bin/main.cgi"
+  uri._.query          - "msg=test&val=1"
+  uri._.fragment       - "here"
 
-To compose uri string, we must call uri_compose with uri object:
+usi_compose is used to compose uri string from a supplied object (which is
+returned from a previous call of uri_parse(), for example). For example, with
+http scheme:
+
+var uri_raw = uri_compose({
+  scheme: "http",
+  authority: {host: site.domain}})
+
+Gives us "http://site.domain" uri_raw value.
+
+With not supported scheme:
 
 var uri = uri_compose({
 	_: {
@@ -71,13 +89,29 @@ var uri = uri_compose({
 		query: "msg=test&val=1",
 		fragment: "here"}});
 
-uri contains:
+Gives us "unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here".
 
-"unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here"
-  
+To see what schemes are supported, view uri_schemes object in a
+browser console.
+
+ADDING NEW SCHEMES
+==================
+
+See uri/http.js and uri/mailto.js for examples.
+See uri/mailto_a.js for example of scheme support that build on top of other one.
+
+RETURN VALUE
+============
+
+uri_parse returns an object with parsed uri parts.
+uri_compose returns an uri string composed from a supplied uri object.
+
+EXAMPLES
+========
+
 To get parsed uri of a current page do:
 
-  var curi = uri_parse(location.href);
+var curi = uri_parse(location.href);
 
 To normalize uri do:
 
@@ -87,7 +121,7 @@ uri contains:
 
 "https://site.domain/cgi-bin/main.cgi?msg=test&val=1#here"
 
-For example, for mailto scheme:
+For mailto scheme:
 
 var uri = uri_parse("mailto:name@domain.ru?subject=test&scheme=wtf&e=wtf2");
 
@@ -101,12 +135,3 @@ uri contains:
   uri._.scheme - "mailto"
   uri._.path   - "name@domain.ru"
   uri._.query  - "subject=test&scheme=wtf&e=wtf2"
-
-To see what schemes are supported, view uri_schemes object in a
-browser console.
-
-Adding new schemes
-==================
-
-See uri/http.js and uri/mailto.js for examples.
-See uri/mailto_a.js for example of scheme support that build on top of other one.
