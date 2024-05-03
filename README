@@ -38,7 +38,7 @@ uri_parse is used to parse a specified uri string into an separate parts.
 This function is returned an object with parsed parts. For example, this line:
 
   var uri = uri_parse("https://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
-  
+
 returns into uri var an object with the next properties:
 
   scheme           - "https"
@@ -59,7 +59,7 @@ If we parse a scheme that isn't supported, then we get only rfc3986 values.
 For example, the next line:
 
   var uri = uri_parse("unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here");
-  
+
 Gives us:
 
   uri._.scheme         - "unknown"
@@ -67,6 +67,8 @@ Gives us:
   uri._.path           - "/cgi-bin/main.cgi"
   uri._.query          - "msg=test&val=1"
   uri._.fragment       - "here"
+
+A parsed scheme is always in lower case. A parsed authority host is always in lower case.
 
 usi_compose is used to compose uri string from a supplied object (which is
 returned from a previous call of uri_parse(), for example). For example, with
@@ -93,6 +95,23 @@ Gives us "unknown://site.domain/cgi-bin/main.cgi?msg=test&val=1#here".
 
 To see what schemes are supported, view uri_schemes object in a
 browser console.
+
+
+http/https scheme
+=================
+
+The object properties for http scheme:
+scheme      - "http" or "https"
+authority   - a parted authority; null if there is no authority
+authority.userinfo  - a text before a host and separated with "@"
+authority.host      - a hostname
+authority.port      - a port after a host and separated with ":" (80 by default for http,
+                      443 by default for https)
+path        - a decoded path; null if there is no path
+query       - a parsed query part; an object with key-value pairs; empty object if there is
+              no query part; if some key appear many time, it is converted to array
+fragment    - a decoded fragment; null if there is no fragment
+
 
 ADDING NEW SCHEMES
 ==================
