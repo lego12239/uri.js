@@ -18,9 +18,10 @@ function uri_parse_http(obj)
 				obj.authority.port = 443;
 	}
 	obj.path = _uri_val(obj._.path, "d");
+	obj.query = {};
 	if (obj._.query != null) {
 		a = obj._.query.split("&");
-		obj.query = {};
+		//obj.query = {};
 		for(i = 0; i < a.length; i++) {
 			vp = a[i].split("=");
 			if (obj.query[decodeURIComponent(vp[0])] == null)
